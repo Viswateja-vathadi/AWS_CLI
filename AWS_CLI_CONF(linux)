@@ -1,0 +1,19 @@
+To install the AWS CLI, run the following commands.
+
+$ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+
+To Confirm the installation we can validate with the following command.
+
+$ aws --version
+aws-cli/2.15.59 Python/3.11.8 Linux/6.1.91-99.172.amzn2023.x86_64 exe/x86_64.amzn.2023
+
+To configure OUR AWS account to AWS CLI use the below command.
+
+$ aws configure
+
+AWS Access Key ID [****************AUZP]:
+AWS Secret Access Key [****************8HKa]:
+Default region name [us-east-1]:
+Default output format [json]:
