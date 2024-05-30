@@ -1,0 +1,59 @@
+EC2 KEYPAIR
+
+CREATION
+aws ec2 create-key-pair --key-name MyKeyPair --query 'KeyMaterial' --output text > MyKeyPair.pem
+
+DISPLAY
+aws ec2 describe-key-pairs --key-name MyKeyPair
+
+DELETE
+aws ec2 delete-key-pair --key-name MyKeyPair
+
+SECURITY GROUP
+
+CREATION
+aws ec2 create-security-group --group-name my-sg --description "My security group" --vpc-id vpc-1a2b3c4d
+
+DISPLAY
+$ aws ec2 describe-security-groups --group-ids sg-903004f8
+
+To start, find your IP address.
+$ curl https://checkip.amazonaws.com
+x.x.x.x
+
+You can then add the IP address to your security group by running the aws ec2 authorize-security-group-ingress command.
+$ aws ec2 authorize-security-group-ingress --group-id sg-903004f8 --protocol tcp --port 3389 --cidr x.x.x.x/x
+
+The following command adds another rule to enable SSH to instances in the same security group.
+$ aws ec2 authorize-security-group-ingress --group-id sg-903004f8 --protocol tcp --port 22 --cidr x.x.x.x/x
+
+DELETE
+aws ec2 delete-security-group --group-id sg-903004f8
+
+CREATE EC2
+aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name MyKeyPair --security-group-ids sg-903004f8 --subnet-id subnet-6e7f829e
+
+To add a block device to your instance, specify the --block-device-mappings option when you use run-instances
+--block-device-mappings "[{\"DeviceName\":\"/dev/sdf\",\"Ebs\":{\"VolumeSize\":20,\"DeleteOnTermination\":false}}]"
+
+To add a tag to our instance
+aws ec2 create-tags --resources i-5203422c --tags Key=Name,Value=MyInstance
+
+DISPLAY ALL EC2'S
+aws ec2 describe-instances --filters "Name=instance-type,Values=t2.micro" --query "Reservations[].Instances[].InstanceId"
+
+DISPLAY ALL IMAGE ID'S
+aws ec2 describe-instances --filters "Name=instance-type,Values=t2.micro" --query "Reservations[].Instances[].InstanceId"
+
+The following command lists any of your instances that have the tag Name=MyInstance
+aws ec2 describe-instances --filters "Name=tag:Name,Values=MyInstance"
+
+DELETION OF EC2
+$ aws ec2 terminate-instances --instance-ids i-5203422c
+
+This example is written as a function in the shell script file change_ec2_instance_type.sh that you can source from another script or from the command line. 
+Each script file contains comments describing each of the functions. Once the function is in memory, you can invoke it from the command line. For example, 
+the following commands change the type of the specified instance to t2.nano
+
+$ source ./change_ec2_instance_type.sh
+$ ./change_ec2_instance_type -i *instance-id* -t new-type
